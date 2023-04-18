@@ -1,177 +1,216 @@
 //router.js//
-import { createRouter, createWebHistory } from 'vue-router';
-import Page1 from './src/components/Page1.vue';
-import Page2 from './src/components/Page2.vue';
-import Container from './src/components/Container.vue';
-
-const routes = [
-  {
-    path: '/',
-    component: Page1,
-    children: [
-      {
-        path: 'container',
-        component: Container,
-      },
-    ],
-  },
-  {
-    path: '/page2',
-    component: Page2,
-  },
-];
+import { createRouter, createWebHistory } from 'vue-router'
+import Page1 from '@/views/Page1.vue'
+import Page2 from '@/views/Page2.vue'
+import Page3 from '@/views/Page3.vue'
+import Sheet from '@/views/sheet.vue'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-});
+  routes: [
+    {
+      path: '/',
+      component: Page1,
+      children: [
+        {
+          name: 'Sheet',
+          path: '/sheet',
+          component: Sheet,
+          meta: {
+            scrollToTop: false, // 在这里添加 scrollToTop 属性
+          },
+        },
+      ],
+    },
+    {
+      path: '/page2',
+      name: 'Page2',
+      component: Page2,
+      meta: {
+        scrollToTop: false, // 在这里添加 scrollToTop 属性
+      },
+    },
+    {
+      path: '/page3',
+      name: 'Page3',
+      component: Page3,
+      meta: {
+        scrollToTop: false, // 在这里添加 scrollToTop 属性
+      },
+    },
+  ],
+  scrollBehavior (to, from, savedPosition) {
+    if (to.meta.scrollToTop) {
+      return { top: 0 }
+    } else if (savedPosition) {
+      return savedPosition
+    } else {
+      return null
+    }
+  },
+})
 
-export default router;
-
+export default router
 
 //app.vue//
 <template>
-  <div id="app">
-    <div>
+  <div class="overflow-y-scroll no-scrollbar">
+    <!-- <NavBar></NavBar> -->
+  </div>
+  <div class="text-2xl container fixed top-0 z-10 space-x-6  bg-white w-full ">
       <router-link to="/">Page1</router-link>
       <router-link to="/page2">Page2</router-link>
-    </div>
-    <transition name="slide" mode="out-in">
-      <router-view />
+      <router-link to="/page3">Page2</router-link>
+
+    </div >
+    <div class="pt-64 ">
+    <router-view v-slot="{ Component }">
+    <transition name="slide" >
+      <component :is="Component" />
     </transition>
+  </router-view>
+</div>
+</template>
+
+<script>
+import NavBar from "./components/NavBar.vue";
+
+export default {
+  components: {
+    NavBar,
+  },
+  data() {
+    return {
+    };
+  },
+  // rest of the code
+};
+
+</script>
+
+<style>
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.slide-leave-active {
+  transition: all 0.75s ease-out;
+}
+.slide-enter-to {
+  position: relative;
+  right: 0;
+}
+.slide-enter-from {
+  position: absolute;
+  right: -100%;
+}
+.slide-leave-to {
+  position: absolute;
+  left: -100%;
+}
+.slide-leave-from {
+  position: absolute;
+  left: 0;
+}
+</style>
+
+
+//page1.vue//
+<template>
+  <div class="container w-full text-4xl h-screen bg-orange-500">
+    <h1>Page12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 contentPage12 content</h1>
+<div ref="buttonContainer">
+  <button @click="showContainer">Work1</button>
+</div>
+    <router-view v-slot="{ Component }">
+    <transition name="container1" >
+      <component :is="Component" />
+    </transition>
+  </router-view>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      show: false
+    };
+  },
+  methods: {
+    showContainer() {
+    this.$router.push('/sheet');
+  },
+    goToPage2() {
+    this.$router.push("/page2");
+  },
+  }
+};
 </script>
 
 <style>
-/* 定义进入动画 */
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s;
+.container1 {
+position: absolute;
+top: 0%; /* 您可以根据需要调整这个值 */
+width: 100%;
 }
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(100%);
+.container1-enter-active,
+.container1-leave-active {
+  transition: all 0.5s;
 }
-.slide-enter-to,
-.slide-leave-from {
-  transform: translateX(0%);
+.container1-enter-from,
+.container1-leave-to {
+  transform: translateY(100%);
+}
+.container1-enter-to,
+
+.container1-leave-from {
+  transform: translateY(0%);
+}
+</style>
+  
+//sheets.vue//
+<template>
+  <div class="container1 fixed bg-slate-400 h-screen pt-32">
+    <h2>Work1Work1Work1Work1</h2>
+    <button @click="goBack">返回</button>
+    <div class="scrollable text-9xl "> <!-- 添加.scrollable子div -->
+      <!-- 在这里添加你需要的内容 -->
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.</p>
+      <!-- 添加更多内容以测试滚动效果 -->
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "container1",
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    }
+  }
+  // 移除 mounted 生命周期钩子
+};
+</script>
+
+<style>
+.container1 {
+  top: 0;
+  left: 0;
+  width: 150%;
+  z-index: 1000; /* 添加 z-index 以确保组件始终在其他元素之上 */
+}
+
+.scrollable {
+  height: calc(100% - 4rem); /* 计算可滚动区域的高度，这里减去4rem是为了给标题和按钮留出空间 */
+  overflow-y: auto; /* 设置垂直滚动 */
+  padding: 0 1rem; /* 为.scrollable区域添加内边距 */
+}
+
+.container {
+  transition: all 0.5s;
 }
 </style>
 
-//page1.vue//
-<template>
-    <div class="container h-96 bg-orange-300">
-      <h1>Page1 content</h1>
-      <button @click="showContainer">显示/隐藏 Container</button>
-      <button @click="goToPage2">切换到 Page2</button>
-      <transition name="container1" mode="out-in">
-        <router-view  />
-      </transition>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        show: false
-      };
-    },
-    methods: {
-      showContainer() {
-      this.$router.push('/container');
-    },
-      goToPage2() {
-      this.$router.push("/page2");
-    },
-    }
-  };
-  </script>
-  
-  <style>
-  .container1 {
-  position: absolute;
-  top: 0%; /* 您可以根据需要调整这个值 */
-  left: ;
-  width: 100%;
-}
-  .container1-enter-active,
-  .container1-leave-active {
-    transition: all 0.5s;
-  }
-  .container1-enter-from,
-  .container1-leave-to {
-    transform: translateY(100%);
-  }
-  .container1-enter-to,
-  
-  .container1-leave-from {
-    transform: translateY(0%);
-  }
-  </style>
-  
-<!-- src/components/Page2.vue -->
-<template>
-<transition name="slide-left">
-  <div class="page">
-    <h1>Page2 content</h1>
-    <button @click="goBack">返回</button>
-    <!-- 其他内容 -->
-  </div>
-</transition>
-  </template>
-  
-  <script>
-  export default {
-    name: "Page2",
-    methods: {
-      goBack() {
-        this.$router.go(-1);
-      }
-    }
-  };
-  </script>
-  
-  <style>
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: transform 0.3s;
-}
-
-.slide-left-enter,
-.slide-left-leave-to {
-  transform: translateX(100%);
-}
-  </style>
-  
-  
-  //container// （子内容）
-  <template>
-    <div class="container1 bg-slate-400 h-96 ">
-      <h2>Container</h2>
-      <button @click="goBack">返回</button>
-      <!-- 在这里添加你需要的内容 -->
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "container",
-    methods: {
-      goBack() {
-        this.$router.go(-1);
-      }
-    }
-  };
-  </script>
-  
-  <style>
-  .container {
-    transition: all 0.5s;
-  }
-  </style>
-  
